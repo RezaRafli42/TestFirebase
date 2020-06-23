@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -59,6 +60,31 @@ public class TambahData extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Data berhasil ditambahkan", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void updateBarang(Barang barang) {
+        /**
+         * Baris kode yang digunakan untuk mengupdate data barang
+         * yang sudah dimasukkan di Firebase Realtime Database
+         */
+        database.child("barang") //akses parent index, ibaratnya seperti nama tabel
+                .child(barang.getKode()) //select barang berdasarkan key
+                .setValue(barang) //set value barang yang baru
+                .addOnSuccessListener(this, new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                        /**
+                         * Baris kode yang akan dipanggil apabila proses update barang sukses
+                         */
+                        Snackbar.make(findViewById(R.id.btnOk), "Data berhasil diupdatekan", Snackbar.LENGTH_LONG).setAction("Oke", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                finish();
+                            }
+                        }).show();
+                    }
+                });
     }
 
     public static Intent getActIntent(Activity activity){

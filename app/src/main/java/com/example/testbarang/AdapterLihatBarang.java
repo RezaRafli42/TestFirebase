@@ -1,8 +1,11 @@
 package com.example.testbarang;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.content.Context;
 import java.util.ArrayList;
@@ -13,6 +16,8 @@ public class AdapterLihatBarang extends
 
     private ArrayList<Barang> daftarBarang;
     private Context context;
+    LihatBarang listener;
+
 
     public AdapterLihatBarang(ArrayList<Barang> barangs, Context ctx) {
         /**
@@ -20,6 +25,7 @@ public class AdapterLihatBarang extends
          */
         daftarBarang = barangs;
         context = ctx;
+        listener = (LihatBarang)ctx;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -55,20 +61,54 @@ public class AdapterLihatBarang extends
          *  Menampilkan data pada view
          */
         final String name = daftarBarang.get(position).getNama();
+
         holder.tvTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 /**
-                 *  untuk latihan Selanjutnya , jika ingin membaca detail data
+                 *  Kodingan untuk tutorial Selanjutnya :p Read detail data
                  */
             }
         });
+
         holder.tvTitle.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 /**
-                 *  untuk latihan Selanjutnya ,fungsi Delete dan Update data
+                 *  Kodingan untuk delete dan update data
                  */
+                final Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.dialog_view);
+                dialog.setTitle("Pilih Aksi");
+                dialog.show();
+
+                Button editButton = (Button) dialog.findViewById(R.id.bt_edit_data);
+                Button delButton = (Button) dialog.findViewById(R.id.bt_delete_data);
+
+                //apabila tombol edit diklik
+                editButton.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                                context.startActivity(TambahData.getActIntent((Activity) context).putExtra("data", daftarBarang.get(position)));
+                            }
+                        }
+                );
+
+                //apabila tombol delete diklik
+                delButton.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                /**
+                                 *  Kodingan untuk Delete data (memanggil interface delete data)
+                                 */
+                                dialog.dismiss();
+                                listener.onDeleteData(daftarBarang.get(position),position);
+                            }
+                        }
+                );
                 return true;
             }
         });
@@ -82,4 +122,9 @@ public class AdapterLihatBarang extends
          */
         return daftarBarang.size();
     }
+
+    public interface FirebaseDataListener{
+        void onDeleteData(Barang barang, int position);
+    }
+
 }
